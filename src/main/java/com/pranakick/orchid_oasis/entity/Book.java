@@ -29,6 +29,10 @@ public class Book {
     @Column(name = "cover_image_path")
     private String coverImagePath;
 
+    @Lob
+    @Column(name = "pdf_file", columnDefinition = "BLOB") // columnDefinition = "BLOB": Ensures correct mapping in H2.
+    private byte[] pdfFile;
+
     @ManyToMany
     @JoinTable(
             name = "book_category",
