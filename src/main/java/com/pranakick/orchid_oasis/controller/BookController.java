@@ -19,11 +19,19 @@ public class BookController {
 
     private final BookService bookService;
 
+    /**
+     * This method is used to upload a book with a PDF file.
+     * @param title The title of the book.
+     * @param author The author of the book.
+     * @param file The PDF file of the book.
+     * @return The saved book.
+     */
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Book> uploadBookWithPdf(
             @RequestParam("title") String title,
             @RequestParam("author") String author,
             @RequestParam("file")MultipartFile file){
+
         try{
             Book savedBook = bookService.saveBookWithPdf(title,author,file);
             return ResponseEntity.ok(savedBook);
@@ -32,6 +40,11 @@ public class BookController {
         }
     }
 
+    /**
+     * This method is used to download a PDF file of a book by its ID.
+     * @param id The ID of the book.
+     * @return The PDF file of the book.
+     */
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id){
         byte[] pdfData = bookService.getPdfByBookId(id);
@@ -39,5 +52,16 @@ public class BookController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=book.pdf")
                 .body(pdfData);
+    }
+
+    /**
+     * This method is used to delete a book by its ID.
+     * @param bookId The ID of the book.
+     * @return A message indicating the success of the operation.
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteBookById(@PathVariable(name = "id")Long bookId){
+        String message = bookService.deleteBook(bookId);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

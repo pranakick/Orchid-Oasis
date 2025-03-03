@@ -7,5 +7,7 @@ import java.io.IOException;
 
 public interface BookService {
     Book saveBookWithPdf(String title, String author, MultipartFile pdfFile) throws IOException;
-    public byte[] getPdfByBookId(Long bookId);
+    byte[] getPdfByBookId(Long bookId);
+    String deleteBook(Long id);
+
 }
