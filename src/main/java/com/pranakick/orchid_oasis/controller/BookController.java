@@ -1,5 +1,6 @@
 package com.pranakick.orchid_oasis.controller;
 
+import com.pranakick.orchid_oasis.dto.BookWithoutPdfDTO;
 import com.pranakick.orchid_oasis.entity.Book;
 import com.pranakick.orchid_oasis.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -30,10 +32,11 @@ public class BookController {
     public ResponseEntity<Book> uploadBookWithPdf(
             @RequestParam("title") String title,
             @RequestParam("author") String author,
-            @RequestParam("file")MultipartFile file){
+            @RequestParam("category") List<String> categoryName,
+            @RequestParam("file") MultipartFile file) {
 
         try{
-            Book savedBook = bookService.saveBookWithPdf(title,author,file);
+            Book savedBook = bookService.saveBookWithPdf(title,author,categoryName, file );
             return ResponseEntity.ok(savedBook);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -41,12 +44,12 @@ public class BookController {
     }
 
     /**
-     * This method is used to download a PDF file of a book by its ID.
+     * This method is used to get a PDF file of a book by its ID.
      * @param id The ID of the book.
      * @return The PDF file of the book.
      */
-    @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id){
+    @GetMapping("/get/{id}")
+    public ResponseEntity<byte[]> getPdf(@PathVariable Long id){
         byte[] pdfData = bookService.getPdfByBookId(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -63,5 +66,14 @@ public class BookController {
     public ResponseEntity<String> deleteBookById(@PathVariable(name = "id")Long bookId){
         String message = bookService.deleteBook(bookId);
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    /**
+     * This method is used to get all books without PDF.
+     * @return A list of all books without PDF.
+     */
+    @GetMapping("/get-all-books")
+    public List<BookWithoutPdfDTO> getAllBooksWithoutPdf(){
+        return bookService.getAllBooks();
     }
 }
